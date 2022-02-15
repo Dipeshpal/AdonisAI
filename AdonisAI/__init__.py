@@ -16,12 +16,25 @@ try:
     from brain_nlu.decision_maker_api import make_decision
     from services.mic_input_ai import mic_input_ai
     from features.date_time import date_time
+    from features.joke import joke
+    from features.launch_app import launch_app
+    from features.news import news
+    from features.tell_me_about import tell_me_about
+    from features.weather import weather
+    from features.website_open import website_open
 except:
     from AdonisAI.services.speech_to_text_google import speech_to_text_google
     from AdonisAI.services.text_to_speech import text_to_speech
     from AdonisAI.brain_nlu.decision_maker_api import make_decision
     from AdonisAI.services.mic_input_ai import mic_input_ai
     from AdonisAI.features.date_time import date_time
+    from AdonisAI.features.date_time import date_time
+    from AdonisAI.features.joke import joke
+    from AdonisAI.features.launch_app import launch_app
+    from AdonisAI.features.news import news
+    from AdonisAI.features.tell_me_about import tell_me_about
+    from AdonisAI.features.weather import weather
+    from AdonisAI.features.website_open import website_open
 
 
 class InputOutput:
@@ -112,14 +125,17 @@ class AdonisEngine(InputOutput):
         self.shutdown_command = shutdown_command
         self.wake_word_detection_mechanism = wake_word_detection_mechanism
 
-    def features_lookup(self, feature):
+    def features_lookup(self, feature, inp):
         """
         Create features
         :return: object
         """
         dict_of_features = {
-            'asking date': date_time.date,
-            'asking time': date_time.time
+            'asking date': [date_time.date, None],
+            'asking time': [date_time.time, None],
+            'tell me joke': [joke.tell_me_joke, None],
+            'tell me news': [news.news, None],
+            'tell me weather': [weather.get_weather, inp],
         }
         if self.custom_features is not None:
             if self.custom_features.get(feature, None) is not None:
@@ -139,17 +155,21 @@ class AdonisEngine(InputOutput):
             des = make_decision(inp, ','.join(['asking date', 'asking time', 'out of scope', 'greetings']),
                                 multiclass=True)
             pred_class, acc = des['data'][0]['label'], des['data'][0]['confidences'][0]['confidence']
-            action = self.features_lookup(pred_class.lower())
+            action = self.features_lookup(pred_class.lower(), inp)
         else:
-            action = self.features_lookup(inp)
-            if action is None:
-                des = make_decision(inp, ','.join(['asking date', 'asking time', 'out of scope', 'greetings']),
+            action = self.features_lookup(inp, inp)
+            if action is None and inp is not None and len(inp):
+                des = make_decision(inp, ','.join(['asking date', 'asking time', 'out of scope', 'greetings',
+                                                   'tell me weather', 'tell me joke', 'tell me news']),
                                     multiclass=True)
                 pred_class, acc = des['data'][0]['label'], des['data'][0]['confidences'][0]['confidence']
-                action = self.features_lookup(pred_class.lower())
+                action = self.features_lookup(pred_class.lower(), inp)
 
         if action is not None:
-            call_out = action()
+            if action[1] is not None:
+                call_out = action[0](inp)
+            else:
+                call_out = action[0]()
         else:
             print("You Said: %s" % inp)
             call_out = "Sorry, I don't understand your command."
@@ -168,9 +188,9 @@ class AdonisEngine(InputOutput):
         """
 
         def play_wake_up_sound():
-            if not os.path.exists('wake_up.mp3'):
-                path = download('https://github.com/Dipeshpal/AdonisAI/raw/main/AdonisAI/utils/wake_up.mp3',
-                                'wake_up.mp3', progressbar=True)
+            if not os.path.exists('wake_up.wav'):
+                path = download('https://github.com/Dipeshpal/AdonisAI/raw/main/AdonisAI/utils/wake_up.wav',
+                                'wake_up.wav', progressbar=True)
             playsound('wake_up.mp3')
 
         while True:
@@ -211,7 +231,7 @@ if __name__ == '__main__':
 
 
     di = {
-        "hello": pprint
+        "hello": [pprint, None]
     }
     obj = AdonisEngine(bot_name='alexa',
                        input_mechanism=InputOutput.speech_to_text_ai,
