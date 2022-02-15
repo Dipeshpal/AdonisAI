@@ -4,9 +4,11 @@ import random
 from joblib import Parallel, delayed, parallel_backend
 import phonetics
 from fuzzywuzzy import fuzz
-import shutup; shutup.please()
-from playsound import playsound
+import shutup;
 
+shutup.please()
+from playsound import playsound
+from download import download
 
 try:
     from services.speech_to_text_google import speech_to_text_google
@@ -164,10 +166,13 @@ class AdonisEngine(InputOutput):
         Python multi-threading function to run AdonisAI Engine forever
         :return: None
         """
+
         def play_wake_up_sound():
             if not os.path.exists('wake_up.mp3'):
-                
+                path = download('https://github.com/Dipeshpal/AdonisAI/raw/main/AdonisAI/utils/wake_up.mp3',
+                                'wake_up.mp3', progressbar=True)
             playsound('wake_up.mp3')
+
         while True:
             print("Listening for wake word...")
             if self.wake_word_detection_mechanism == InputOutput.speech_to_text_google:
@@ -182,6 +187,7 @@ class AdonisEngine(InputOutput):
             print("You Said: %s" % text)
             if accuracy > 50:
                 print("Wake word detected...")
+                play_wake_up_sound()
                 Parallel(n_jobs=1)([delayed(self.run)()])
 
             code1 = phonetics.metaphone(text)
