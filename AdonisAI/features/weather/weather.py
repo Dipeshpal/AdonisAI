@@ -56,7 +56,8 @@ def weather_app(city):
     return weather_res
 
 
-def get_weather(text):
+def get_weather(*args, **kwargs):
+    text = args[0]
     doc = nlp(text)
     city = None
     for ent in doc.ents:

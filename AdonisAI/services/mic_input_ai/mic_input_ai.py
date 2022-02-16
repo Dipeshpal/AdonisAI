@@ -27,8 +27,8 @@ class MicRecord:
         audio = pyaudio.PyAudio()
         # start Recording
         stream = audio.open(format=self.FORMAT, channels=self.CHANNELS,
-                                 rate=self.RATE, input=True,
-                                 frames_per_buffer=self.CHUNK)
+                            rate=self.RATE, input=True,
+                            frames_per_buffer=self.CHUNK)
         print(f"Listening for {record_seconds} Seconds")
         if debug:
             print("recording...")
@@ -67,7 +67,11 @@ class SpeechRecognition(MicRecord):
         predicted_ids = torch.argmax(logits, dim=-1)
         transcription = self.tokenizer.batch_decode(predicted_ids)[0]
         os.remove(self.WAVE_OUTPUT_FILENAME)
-        return transcription.lower()
+        # if transcription is not None or :
+        #     return transcription.lower(), True
+        # else:
+        #     return None, False
+        return None if transcription.lower() == '' else transcription.lower(), None
 
 
 if __name__ == '__main__':

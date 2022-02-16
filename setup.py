@@ -16,7 +16,7 @@ setuptools.setup(
     include_package_data=True,
     packages=find_namespace_packages(include=['AdonisAI.*', 'AdonisAI']),
     install_requires=['pyaudio', 'SpeechRecognition', 'gtts', 'lazyme', 'torch', 'joblib',
-                      'phonetics', 'fuzzywuzzy', 'requests', 'librosa', 'transformers', 'lazyme', 'playsound',
+                      'phonetics', 'fuzzywuzzy', 'requests', 'librosa', 'transformers', 'lazyme', 'playsound==1.2.2',
                       'pyttsx3',  'python-Levenshtein', 'shutup', 'download', 'pyjokes', 'spacy',
                       'beautifulsoup4==4.9.3', 'wikipedia'],
 
