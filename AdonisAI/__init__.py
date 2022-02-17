@@ -17,27 +17,14 @@ try:
     from services.text_to_speech import text_to_speech
     from brain_nlu.decision_maker_api import make_decision
     from services.mic_input_ai.mic_input_ai import SpeechRecognition
-    from features.date_time import date_time
-    from features.joke import joke
-    from features.launch_app import launch_app
-    from features.news import news
-    from features.tell_me_about import tell_me_about
-    from features.weather import weather
-    from features.website_open import website_open
+    from features_default import dict_of_features
 except ImportError as e:
     # print("ImportError: {}".format(e))
     from AdonisAI.services.speech_to_text_google import speech_to_text_google
     from AdonisAI.services.text_to_speech import text_to_speech
     from AdonisAI.brain_nlu.decision_maker_api import make_decision
     from AdonisAI.services.mic_input_ai.mic_input_ai import SpeechRecognition
-    from AdonisAI.features.date_time import date_time
-    from AdonisAI.features.date_time import date_time
-    from AdonisAI.features.joke import joke
-    from AdonisAI.features.launch_app import launch_app
-    from AdonisAI.features.news import news
-    from AdonisAI.features.tell_me_about import tell_me_about
-    from AdonisAI.features.weather import weather
-    from AdonisAI.features.website_open import website_open
+    from AdonisAI.features_default import dict_of_features
 
 
 class InputOutput:
@@ -53,12 +40,12 @@ class InputOutput:
         return speech_to_text_google.speech_to_text_google(greeting=greeting)
 
     @staticmethod
-    def speech_to_text_ai(speech_recognition_ai_obj, *args, **kwargs):
+    def speech_to_text_ai(speech_recognition_ai_obj, greeting=None, *args, **kwargs):
         """
         Convert speech to text using AI
         :return: command (str), None
         """
-        return speech_recognition_ai_obj.start_speech_recognition()
+        return speech_recognition_ai_obj.start_speech_recognition(greeting=greeting)
 
     @staticmethod
     def text_to_speech(text, lang='en', backend_tts_api='pyttsx3', *args, **kwargs):
@@ -97,7 +84,7 @@ class InputOutput:
 
 class AdonisEngine(InputOutput, SpeechRecognition):
     def __init__(self, input_mechanism: object, output_mechanism: list, wake_word_detection_mechanism: object,
-                 backend_tts_api: str, custom_features: dict = None, bot_name: str = 'adonis',
+                 backend_tts_api: str, bot_name: str = 'adonis',
                  wake_word_detection_status: bool = True, shutdown_command: str = 'shutdown'):
         """
         Engine class for AdonisAI
@@ -107,7 +94,7 @@ class AdonisEngine(InputOutput, SpeechRecognition):
                 AdonisAI.InputOutput.speech_to_text_google
                 AdonisAI.InputOutput.speech_to_text_ai
                 AdonisAI.InputOutput.text_input
-        :param output_mechanism: object
+        :param output_mechanism: list of object/objects
             valid values (Either one of below or both)-
                 [AdonisAI.InputOutput.text_output]
                 [AdonisAI.InputOutput.text_to_speech]
@@ -120,8 +107,7 @@ class AdonisEngine(InputOutput, SpeechRecognition):
             valid values (Either one of below)-
                 'pyttsx3'
                 'gtts'
-        :param custom_features: dict
-        :param wake_word_detection: bool
+        :param wake_word_detection_status: bool
         """
         super().__init__()
         self.speech_recognition_ai_obj = SpeechRecognition()
@@ -129,7 +115,7 @@ class AdonisEngine(InputOutput, SpeechRecognition):
         self.input_mechanism = input_mechanism
         self.output_mechanism = output_mechanism
         self.backend_tts_api = backend_tts_api
-        self.custom_features = custom_features
+        self.custom_features = {}
         self.wake_word_detection_status = wake_word_detection_status
         self.shutdown_command = shutdown_command
         self.wake_word_detection_mechanism = wake_word_detection_mechanism
@@ -158,24 +144,29 @@ class AdonisEngine(InputOutput, SpeechRecognition):
                 raise ValueError("Invalid output_mechanism type. Expected one of: %s" % [
                     'Adonis.InputOutput.text_output', 'Adonis.InputOutput.text_to_speech'])
 
-    def features_lookup(self, feature, *args, **kwargs):
+    @staticmethod
+    def check_registered_command():
+        """
+        Check if registered command list
+        :return: list
+        """
+        return list(dict_of_features.keys())
+
+    def register_feature(self, feature_obj: object, feature_command: str):
+        if feature_command in list(dict_of_features.keys()):
+            raise ValueError(f"Feature command '{feature_command}' already registered. Change the command name.")
+        dict_temp = {
+            feature_command: feature_obj
+        }
+        self.custom_features.update(dict_temp)
+        dict_of_features.update(self.custom_features)
+
+    def features_lookup(self, feature_command: str):
         """
         Create features
         :return: object
         """
-        dict_of_features = {
-            'asking date': [date_time.date, args, kwargs],
-            'asking time': [date_time.time, args, kwargs],
-            'tell me joke': [joke.tell_me_joke, args, kwargs],
-            'tell me news': [news.news, args, kwargs],
-            'tell me weather': [weather.get_weather, args, kwargs],
-        }
-        if self.custom_features is not None:
-            if self.custom_features.get(feature, None) is not None:
-                return self.custom_features.get(feature)
-            else:
-                return dict_of_features.get(feature, None)
-        return dict_of_features.get(feature, None)
+        return dict_of_features.get(feature_command, None)
 
     def play_wake_up_sound(self):
         if not os.path.exists('wake_up.wav'):
@@ -186,30 +177,23 @@ class AdonisEngine(InputOutput, SpeechRecognition):
     def manage_tasks(self):
         try:
             # get input from user according to the input mechanism
-            inp = self.input_mechanism(speech_recognition_ai_obj=self.speech_recognition_ai_obj)[0]
+            inp = self.input_mechanism(speech_recognition_ai_obj=self.speech_recognition_ai_obj,
+                                       greeting='Waiting for your command-')
             print('You said (Command): ', inp[0] if inp is not None else None)
-            if inp is None:
+            if inp[0] is None:
                 return None, 'No input detected.'
+            else:
+                inp = inp[0]
 
             # find action according to input
-            if self.custom_features is None:
-                des = make_decision(inp, ','.join(CLASSES),
-                                    multiclass=True)
-                pred_class, acc = des['data'][0]['label'], des['data'][0]['confidences'][0]['confidence']
-                action = self.features_lookup(pred_class.lower(), inp)
-            else:
-                action = self.features_lookup(inp, inp)
-                if action is None and inp is not None and len(inp):
-                    des = make_decision(inp, ','.join(CLASSES+list(self.custom_features.keys())), multiclass=True)
-                    pred_class, acc = des['data'][0]['label'], des['data'][0]['confidences'][0]['confidence']
-                    action = self.features_lookup(pred_class.lower(), inp)
+            # if self.custom_features is None:
+            des = make_decision(inp, ','.join(dict_of_features.keys()), multiclass=True)
+            pred_class, acc = des['data'][0]['label'], des['data'][0]['confidences'][0]['confidence']
+            action = self.features_lookup(pred_class.lower())
 
             # perform action
             if action is not None:
-                if action[1] is not None:
-                    call_out = action[0](action[1], action[2])
-                else:
-                    call_out = action[0]()
+                call_out = action(inp)
             else:
                 call_out = "Sorry, I don't understand your command."
 
@@ -222,13 +206,15 @@ class AdonisEngine(InputOutput, SpeechRecognition):
                         output(call_out)
             return True, 'Task Done'
         except Exception as e:
+            print(e)
             return False, e
 
     def run(self):
         while True:
             if self.wake_word_detection_status:
                 print("Listening for wake word...")
-                wake_word, _ = self.wake_word_detection_mechanism(speech_recognition_ai_obj=self.speech_recognition_ai_obj)
+                wake_word, _ = self.wake_word_detection_mechanism(
+                    speech_recognition_ai_obj=self.speech_recognition_ai_obj)
                 print("You Said: %s" % wake_word)
                 if wake_word is not None:
                     code1 = phonetics.metaphone(wake_word)
@@ -251,21 +237,34 @@ class AdonisEngine(InputOutput, SpeechRecognition):
 
 
 if __name__ == '__main__':
-    def pprint(*args, **kwargs):
-        return None
+    # RULES (Optional)-
+    # It must contain parameter 'feature_command' \
+    # (What ever input you provide when AI ask for input will be passed to this function)
+    # Return is optional
+    # If you want to provide return value it should only return text (str)
+
+    def pprint(
+            feature_command="custom feature (What ever input you provide when AI ask for input\
+             will be passed to this function)"):
+        # write your code here to do something with the command
+        # perform some tasks
+        # return is optional
+        return feature_command + ' Executed'
 
 
-    di = {
-        # "command": [function, *args, **kwargs],
-        "hello": [pprint, None, None]
-    }
     obj = AdonisEngine(bot_name='alexa',
                        input_mechanism=InputOutput.speech_to_text_ai,
                        output_mechanism=[InputOutput.text_output, InputOutput.text_to_speech],
-                       # output_mechanism=[InputOutput.text_output],
                        backend_tts_api='pyttsx3',
-                       custom_features=di,
-                       wake_word_detection_status=False,
+                       wake_word_detection_status=True,
                        wake_word_detection_mechanism=InputOutput.speech_to_text_ai,
                        shutdown_command='shutdown')
+
+    # Check existing list of commands, Existing command you can not use while registering your function
+    print(obj.check_registered_command())
+
+    # Register your function (Optional)
+    obj.register_feature(feature_obj=pprint, feature_command='custom feature')
+
+    # Start AI in background. It will always run forever until you don't stop it manually.
     obj.engine_start()
