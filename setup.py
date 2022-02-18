@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="AdonisAI",
-    version="1.1",
+    version="1.3",
     author="Dipesh",
     author_email="dipeshpal17@gmail.com",
     description="AdonisAI is python library to build your own AI virtual assistant with natural language processing.",
@@ -17,8 +17,9 @@ setuptools.setup(
     packages=find_namespace_packages(include=['AdonisAI.*', 'AdonisAI']),
     install_requires=['pyaudio', 'SpeechRecognition', 'gtts', 'lazyme', 'torch', 'joblib',
                       'phonetics', 'fuzzywuzzy', 'requests', 'librosa', 'transformers', 'lazyme', 'playsound==1.2.2',
-                      'pyttsx3',  'python-Levenshtein', 'shutup', 'download', 'pyjokes', 'spacy',
-                      'beautifulsoup4==4.9.3', 'wikipedia'],
+                      'pyttsx3', 'python-Levenshtein', 'shutup', 'download', 'pyjokes', 'spacy',
+                      'beautifulsoup4==4.9.3', 'wikipedia', 'deepspeech', 'deepspeech-gpu', 'webrtcvad', 'halo',
+                      'scipy', 'pywhatkit', 'flask', 'regex'],
 
     classifiers=[
         "Programming Language :: Python :: 3",

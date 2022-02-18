@@ -1,14 +1,20 @@
 # Adonis
 
+![enter image description here](https://source.unsplash.com/1600x900/?robots)
+
 1. What is Adonis?
-2.  Prerequisite
-3.  Getting Started- How to use it?
+2. Prerequisite
+3. Getting Started- How to use it?
 4. What it can do (Features it supports)
-5.  Future?
+5. Future / Request Features
+6. What's new? 
+7. Contribute
+8. Connect me
+9. Donate
 
 ## 1. What is Adonis?
 
-Adonis is a Python Module which is able to perform task like Chatbot, Assistant etc. It provides base functionality for any assistant application. This JarvisAI is built using Tensorflow, Pytorch, Transformers and other opensource libraries and frameworks. Well, you can contribute on this project to make it more powerful.
+Adonis is a Python Module which is able to perform task like Chatbot, Assistant etc. It provides base functionality for any assistant application. This library is built using Tensorflow, Pytorch, Transformers and other opensource libraries and frameworks. Well, you can contribute on this project to make it more powerful.
 
 This project is crated only for those who is having interest in building Virtual Assistant. Generally it took lots of time to write code from scratch to build Virtual Assistant. So, I have build an Library called "Adonis", which gives you easy functionality to build your own Virtual Assistant.
 
@@ -46,11 +52,11 @@ This project is crated only for those who is having interest in building Virtual
 	    return feature_command + ' Executed'  
 	  
 	obj = AdonisEngine(bot_name='alexa',  
-					   input_mechanism=InputOutput.speech_to_text_ai,  
+					   input_mechanism=InputOutput.speech_to_text_deepspeech_streaming,  
 					   output_mechanism=[InputOutput.text_output, InputOutput.text_to_speech],  
 					   backend_tts_api='pyttsx3',  
 					   wake_word_detection_status=True,  
-					   wake_word_detection_mechanism=InputOutput.speech_to_text_ai,  
+					   wake_word_detection_mechanism=InputOutput.speech_to_text_deepspeech_streaming,  
 					   shutdown_command='shutdown')  
 	
 	# Check existing list of commands, Existing command you can not use while registering your function
@@ -70,9 +76,9 @@ This project is crated only for those who is having interest in building Virtual
 
 	### Parameters-
 	
-	![enter image description here](https://i.ibb.co/jT3K3H7/raycast-untitled.png)
+	![enter image description here](https://i.ibb.co/1bzNXBb/raycast-untitled-4.png)
 
-## 4.  What it can do (Features it supports)-
+# 4.  What it can do (Features it supports)-
 
 1. Currently it support only english language
 2. Supports voice and text input/output.
@@ -81,19 +87,38 @@ This project is crated only for those who is having interest in building Virtual
 
 	### 4.1. Supported Commands-
 
-	![enter image description here](https://i.ibb.co/2kPzTLv/raycast-untitled-3.png)
+	![enter image description here](https://i.ibb.co/b3dJfz7/raycast-untitled-8.png)
+	
+	### 4.1. Supported Input/Output Methods (Which option do I need to choose?)-
+	
+	![enter image description here](https://i.ibb.co/sCDWW7K/raycast-untitled-5.png)
 
-
-## 5. Future
+# 5. Future/Request Features-
 
 **WIP**
 
-# Connect me-
+**You tell me**
+
+# 6. What new-
+
+1. AdonisAI==1.0: Initial Release.
+
+2. AdonisAI==1.1: Added news and weather features. Added AdonisAI.InputOutput.wake_word_detection_mechanism.
+
+3. AdonisAI==1.2: Added new input mechanism (AdonisAI.InputOutput.speech_to_text_deepspeech_streaming) fast and free. And new features (jokes, about).
+
+4. AdonisAI==1.3: Added New feature (send whatsapp, open website, play on youtube, send email).
+
+# 7. Contribute-
+
+Guide Coming Soon
+
+# 8. Connect me-
 
 https://www.instagram.com/dipesh_pal17/
 
 
-# Donate-
+# 9. Donate-
 
 [Donate here ](https://www.buymeacoffee.com/dipeshpal)
 

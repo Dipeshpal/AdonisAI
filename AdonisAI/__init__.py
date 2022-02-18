@@ -1,4 +1,6 @@
 import os
+import pprint
+import re
 import sys
 import random
 from joblib import Parallel, delayed, parallel_backend
@@ -6,30 +8,43 @@ import phonetics
 from fuzzywuzzy import fuzz
 from playsound import playsound
 from download import download
-from CONSTANT import *
 from lazyme.string import color_print as cprint
 import shutup
 
 shutup.please()
 
 try:
+    from CONSTANT import *
     from services.speech_to_text_google import speech_to_text_google
     from services.text_to_speech import text_to_speech
     from brain_nlu.decision_maker_api import make_decision
     from services.mic_input_ai.mic_input_ai import SpeechRecognition
-    from features_default import dict_of_features
+    from services.asr_deepspeech_streaming.streaming import listen as deepspeech_listen, ARGS, vad_audio, model
+    from features_default import dict_of_features, what_can_i_do
 except ImportError as e:
     # print("ImportError: {}".format(e))
+    from AdonisAI.CONSTANT import *
     from AdonisAI.services.speech_to_text_google import speech_to_text_google
     from AdonisAI.services.text_to_speech import text_to_speech
     from AdonisAI.brain_nlu.decision_maker_api import make_decision
     from AdonisAI.services.mic_input_ai.mic_input_ai import SpeechRecognition
-    from AdonisAI.features_default import dict_of_features
+    from AdonisAI.features_default import dict_of_features, what_can_i_do
+    from AdonisAI.services.asr_deepspeech_streaming.streaming import listen as deepspeech_listen, ARGS, vad_audio, model
 
 
 class InputOutput:
-    def __init__(self):
+    def __init__(self, ARGS, vad_audio, model):
         print("Initializing Engine...")
+        self.ARGS = ARGS
+        self.vad_audio = vad_audio
+        self.model = model
+
+    @staticmethod
+    def speech_to_text_deepspeech_streaming(deepspeech_listen_obj, greeting=None, *args, **kwargs):
+        if greeting is not None:
+            text_to_speech.text_to_speech(text=greeting, backend_tts_api='pyttsx3', lang='en')
+        asr_deepspeech_stream = next(deepspeech_listen_obj)
+        return asr_deepspeech_stream, None
 
     @staticmethod
     def speech_to_text_google(greeting=None, *args, **kwargs):
@@ -94,6 +109,7 @@ class AdonisEngine(InputOutput, SpeechRecognition):
                 AdonisAI.InputOutput.speech_to_text_google
                 AdonisAI.InputOutput.speech_to_text_ai
                 AdonisAI.InputOutput.text_input
+                AdonisAI.InputOutput.speech_to_text_deepspeech_streaming
         :param output_mechanism: list of object/objects
             valid values (Either one of below or both)-
                 [AdonisAI.InputOutput.text_output]
@@ -103,13 +119,19 @@ class AdonisEngine(InputOutput, SpeechRecognition):
             valid values (Either one of below)-
                 AdonisAI.InputOutput.speech_to_text_google
                 AdonisAI.InputOutput.speech_to_text_ai
+                AdonisAI.InputOutput.speech_to_text_deepspeech_streaming
         :param backend_tts_api: str
             valid values (Either one of below)-
                 'pyttsx3'
                 'gtts'
         :param wake_word_detection_status: bool
         """
-        super().__init__()
+        self.ARGS = ARGS
+        self.vad_audio = vad_audio
+        self.model = model
+        self.deepspeech_listen_obj = deepspeech_listen(ARGS, vad_audio, model)
+
+        super().__init__(self.ARGS, self.vad_audio, self.model)
         self.speech_recognition_ai_obj = SpeechRecognition()
         self.bot_name = bot_name
         self.input_mechanism = input_mechanism
@@ -130,15 +152,22 @@ class AdonisEngine(InputOutput, SpeechRecognition):
             raise ValueError("Invalid backend_tts_api type. Expected one of: %s" % ['pyttsx3', 'gtts'])
         if self.wake_word_detection_status:
             if self.wake_word_detection_mechanism not in [InputOutput.speech_to_text_google,
-                                                          InputOutput.speech_to_text_ai]:
+                                                          InputOutput.speech_to_text_ai,
+                                                          InputOutput.speech_to_text_deepspeech_streaming]:
                 raise ValueError("Invalid wake_word_detection_mechanism type. Expected one of: %s" % [
-                    'Adonis.InputOutput.speech_to_text_google', 'Adonis.InputOutput.speech_to_text_ai'])
+                                'Adonis.InputOutput.speech_to_text_google',
+                                'Adonis.InputOutput.speech_to_text_ai',
+                                'Adonis.InputOutput.speech_to_text_deepspeech_streaming'])
 
-        if self.input_mechanism not in [InputOutput.speech_to_text_google, InputOutput.speech_to_text_ai,
-                                        InputOutput.text_input]:
+        if self.input_mechanism not in [InputOutput.speech_to_text_google,
+                                        InputOutput.speech_to_text_ai,
+                                        InputOutput.text_input,
+                                        InputOutput.speech_to_text_deepspeech_streaming]:
             raise ValueError("Invalid input_mechanism type. Expected one of: %s" % [
-                'Adonis.InputOutput.speech_to_text_google', 'Adonis.InputOutput.speech_to_text_ai',
-                'Adonis.InputOutput.text_input'])
+                            'Adonis.InputOutput.speech_to_text_google',
+                            'Adonis.InputOutput.speech_to_text_ai',
+                            'Adonis.InputOutput.text_input',
+                            'Adonis.InputOutput.speech_to_text_deepspeech_streaming'])
         for _ in self.output_mechanism:
             if _ not in [InputOutput.text_output, InputOutput.text_to_speech]:
                 raise ValueError("Invalid output_mechanism type. Expected one of: %s" % [
@@ -178,6 +207,7 @@ class AdonisEngine(InputOutput, SpeechRecognition):
         try:
             # get input from user according to the input mechanism
             inp = self.input_mechanism(speech_recognition_ai_obj=self.speech_recognition_ai_obj,
+                                       deepspeech_listen_obj=self.deepspeech_listen_obj,
                                        greeting='Waiting for your command-')
             print('You said (Command): ', inp[0] if inp is not None else None)
             if inp[0] is None:
@@ -185,17 +215,22 @@ class AdonisEngine(InputOutput, SpeechRecognition):
             else:
                 inp = inp[0]
 
-            # find action according to input
-            # if self.custom_features is None:
-            des = make_decision(inp, ','.join(dict_of_features.keys()), multiclass=True)
-            pred_class, acc = des['data'][0]['label'], des['data'][0]['confidences'][0]['confidence']
-            action = self.features_lookup(pred_class.lower())
-
-            # perform action
-            if action is not None:
-                call_out = action(inp)
+            if re.search('what can you do', inp, re.IGNORECASE) is not None:
+                pprint.pprint(what_can_i_do)
+                li = '\n'.join(list(what_can_i_do.keys()))
+                call_out = 'You can say the following commands: ' + li
             else:
-                call_out = "Sorry, I don't understand your command."
+                # find action according to input
+                # if self.custom_features is None:
+                des = make_decision(inp, ','.join(dict_of_features.keys()), multiclass=True)
+                pred_class, acc = des['data'][0]['label'], des['data'][0]['confidences'][0]['confidence']
+                action = self.features_lookup(pred_class.lower())
+
+                # perform action
+                if action is not None:
+                    call_out = action(inp)
+                else:
+                    call_out = "Sorry, I don't understand your command."
 
             # call out action result according to the output mechanism
             for output in self.output_mechanism:
@@ -214,7 +249,8 @@ class AdonisEngine(InputOutput, SpeechRecognition):
             if self.wake_word_detection_status:
                 print("Listening for wake word...")
                 wake_word, _ = self.wake_word_detection_mechanism(
-                    speech_recognition_ai_obj=self.speech_recognition_ai_obj)
+                    speech_recognition_ai_obj=self.speech_recognition_ai_obj,
+                    deepspeech_listen_obj=self.deepspeech_listen_obj)
                 print("You Said: %s" % wake_word)
                 if wake_word is not None:
                     code1 = phonetics.metaphone(wake_word)
@@ -253,11 +289,11 @@ if __name__ == '__main__':
 
 
     obj = AdonisEngine(bot_name='alexa',
-                       input_mechanism=InputOutput.speech_to_text_ai,
+                       input_mechanism=InputOutput.speech_to_text_deepspeech_streaming,
                        output_mechanism=[InputOutput.text_output, InputOutput.text_to_speech],
                        backend_tts_api='pyttsx3',
                        wake_word_detection_status=True,
-                       wake_word_detection_mechanism=InputOutput.speech_to_text_ai,
+                       wake_word_detection_mechanism=InputOutput.speech_to_text_deepspeech_streaming,
                        shutdown_command='shutdown')
 
     # Check existing list of commands, Existing command you can not use while registering your function
