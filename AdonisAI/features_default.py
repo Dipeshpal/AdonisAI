@@ -9,6 +9,7 @@ try:
     from features.youtube_play import youtube_play
     from features.whatsapp_message import whatsapp_message
     from features.send_email import send_email
+    from features.chatbot import chatbot
 except ImportError as e:
     # print("ImportError: {}".format(e))
     from AdonisAI.features.date_time import date_time
@@ -21,6 +22,7 @@ except ImportError as e:
     from AdonisAI.features.youtube_play import youtube_play
     from AdonisAI.features.whatsapp_message import whatsapp_message
     from AdonisAI.features.send_email import send_email
+    from AdonisAI.features.chatbot import chatbot
 
 dict_of_features = {
     'asking date': date_time.date,
@@ -33,6 +35,7 @@ dict_of_features = {
     'play on youtube': youtube_play.yt_play,
     'send whatsapp message': whatsapp_message.send_whatsapp_message,
     'send email': send_email.send_email,
+    'conversation or greetings': chatbot.chatbot
 }
 
 what_can_i_do = {

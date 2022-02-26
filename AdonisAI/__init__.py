@@ -100,7 +100,7 @@ class InputOutput:
 class AdonisEngine(InputOutput, SpeechRecognition):
     def __init__(self, input_mechanism: object, output_mechanism: list, wake_word_detection_mechanism: object,
                  backend_tts_api: str, bot_name: str = 'adonis',
-                 wake_word_detection_status: bool = True, shutdown_command: str = 'shutdown'):
+                 wake_word_detection_status: bool = True, shutdown_command: str = 'shutdown', secret_key: str = None):
         """
         Engine class for AdonisAI
         :param bot_name: str
@@ -125,6 +125,11 @@ class AdonisEngine(InputOutput, SpeechRecognition):
                 'pyttsx3'
                 'gtts'
         :param wake_word_detection_status: bool
+            True / False
+        :param shutdown_command: str
+            shutdown command
+        :param secret_key: str
+            Secret key for AdonisAI, it's used for security purpose. Get your free key from "https://adonis-ai.herokuapp.com"
         """
         self.ARGS = ARGS
         self.vad_audio = vad_audio
@@ -143,6 +148,10 @@ class AdonisEngine(InputOutput, SpeechRecognition):
         self.wake_word_detection_mechanism = wake_word_detection_mechanism
         self.validate_combination()
 
+        if not os.path.exists("secret_key.txt"):
+            with open("secret_key.txt", "w") as f:
+                f.write(secret_key)
+
     def validate_combination(self):
         """
         Validate combination of input and output mechanism
@@ -155,19 +164,19 @@ class AdonisEngine(InputOutput, SpeechRecognition):
                                                           InputOutput.speech_to_text_ai,
                                                           InputOutput.speech_to_text_deepspeech_streaming]:
                 raise ValueError("Invalid wake_word_detection_mechanism type. Expected one of: %s" % [
-                                'Adonis.InputOutput.speech_to_text_google',
-                                'Adonis.InputOutput.speech_to_text_ai',
-                                'Adonis.InputOutput.speech_to_text_deepspeech_streaming'])
+                    'Adonis.InputOutput.speech_to_text_google',
+                    'Adonis.InputOutput.speech_to_text_ai',
+                    'Adonis.InputOutput.speech_to_text_deepspeech_streaming'])
 
         if self.input_mechanism not in [InputOutput.speech_to_text_google,
                                         InputOutput.speech_to_text_ai,
                                         InputOutput.text_input,
                                         InputOutput.speech_to_text_deepspeech_streaming]:
             raise ValueError("Invalid input_mechanism type. Expected one of: %s" % [
-                            'Adonis.InputOutput.speech_to_text_google',
-                            'Adonis.InputOutput.speech_to_text_ai',
-                            'Adonis.InputOutput.text_input',
-                            'Adonis.InputOutput.speech_to_text_deepspeech_streaming'])
+                'Adonis.InputOutput.speech_to_text_google',
+                'Adonis.InputOutput.speech_to_text_ai',
+                'Adonis.InputOutput.text_input',
+                'Adonis.InputOutput.speech_to_text_deepspeech_streaming'])
         for _ in self.output_mechanism:
             if _ not in [InputOutput.text_output, InputOutput.text_to_speech]:
                 raise ValueError("Invalid output_mechanism type. Expected one of: %s" % [
@@ -294,8 +303,8 @@ if __name__ == '__main__':
                        backend_tts_api='pyttsx3',
                        wake_word_detection_status=True,
                        wake_word_detection_mechanism=InputOutput.speech_to_text_deepspeech_streaming,
-                       shutdown_command='shutdown')
-
+                       shutdown_command='shutdown',
+                       secret_key="Secret key for AdonisAI, it's used for security purpose. Get your free key from https://adonis-ai.herokuapp.com")
     # Check existing list of commands, Existing command you can not use while registering your function
     print(obj.check_registered_command())
 
