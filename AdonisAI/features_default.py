@@ -52,3 +52,6 @@ what_can_i_do = {
     'you can send whatsapp message ': 'Say- "send whatsapp message',
     'you can send email ': 'Say- "send email',
 }
+
+if __name__ == '__main__':
+    print(', '.join(list(dict_of_features.keys())))
