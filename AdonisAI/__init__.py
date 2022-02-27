@@ -17,7 +17,7 @@ try:
     from CONSTANT import *
     from services.speech_to_text_google import speech_to_text_google
     from services.text_to_speech import text_to_speech
-    from brain_nlu.decision_maker_api import make_decision
+    from brain_nlu.decision_maker_api import make_decision_adonis_sentance_similarity
     from services.mic_input_ai.mic_input_ai import SpeechRecognition
     from services.asr_deepspeech_streaming.streaming import listen as deepspeech_listen, ARGS, vad_audio, model
     from features_default import dict_of_features, what_can_i_do
@@ -26,7 +26,7 @@ except ImportError as e:
     from AdonisAI.CONSTANT import *
     from AdonisAI.services.speech_to_text_google import speech_to_text_google
     from AdonisAI.services.text_to_speech import text_to_speech
-    from AdonisAI.brain_nlu.decision_maker_api import make_decision
+    from AdonisAI.brain_nlu.decision_maker_api import make_decision_adonis_sentance_similarity
     from AdonisAI.services.mic_input_ai.mic_input_ai import SpeechRecognition
     from AdonisAI.features_default import dict_of_features, what_can_i_do
     from AdonisAI.services.asr_deepspeech_streaming.streaming import listen as deepspeech_listen, ARGS, vad_audio, model
@@ -231,7 +231,7 @@ class AdonisEngine(InputOutput, SpeechRecognition):
             else:
                 # find action according to input
                 # if self.custom_features is None:
-                des = make_decision(inp, ','.join(dict_of_features.keys()), multiclass=True)
+                des = make_decision_adonis_sentance_similarity(inp, ','.join(dict_of_features.keys()))
                 pred_class, acc = des['data'][0]['label'], des['data'][0]['confidences'][0]['confidence']
                 action = self.features_lookup(pred_class.lower())
 

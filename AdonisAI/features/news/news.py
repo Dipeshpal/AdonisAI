@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup as soup
 import webbrowser
 
 
-def news():
+def news(*args, **kwargs):
     """
     This method will tells top 15 current NEWS
     :return: list / bool

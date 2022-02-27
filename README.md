@@ -2,6 +2,7 @@
 # AdonisAI  
   
 Official Website: [Click Here](https://adonis-ai.herokuapp.com) 
+
 Official Instagram Page: [Click Here](https://www.instagram.com/_jarvisai_)
   
 ![enter image description here](https://source.unsplash.com/1600x900/?robots)  
@@ -44,12 +45,12 @@ This project is crated only for those who is having interest in building Virtual
   
   - You need only this piece of code-  
       ```  
-	 # create your own function       # RULES (Optional)-  
-	 # It must contain parameter 'feature_command' (What ever input you provide when AI ask for input will be passed to this function) 
-	 # Return is optional
-	  # If you want to provide return value it should only return text (str)       
+     # create your own function       # RULES (Optional)-  
+     # It must contain parameter 'feature_command' (What ever input you provide when AI ask for input will be passed to this function) 
+     # Return is optional
+      # If you want to provide return value it should only return text (str)       
 	
-	def pprint(feature_command="custom feature (What ever input you provide when AI ask for input will be passed to this function)"):    
+    def pprint(feature_command="custom feature (What ever input you provide when AI ask for input will be passed to this function)"):    
           # write your code here to do something with the command    
           # perform some tasks   
           # return is optional    
@@ -65,20 +66,21 @@ This project is crated only for those who is having interest in building Virtual
                          secret_key='your_secret_key')   
                            
       # Check existing list of commands, Existing command you can not use while registering your function  
-	 print(obj.check_registered_command())     
+     print(obj.check_registered_command())     
      
       # Register your function (Optional)  
-	 obj.register_feature(feature_obj=pprint, feature_command='custom feature')     
+     obj.register_feature(feature_obj=pprint, feature_command='custom feature')     
      
       # Start AI in background. It will always run forever until you don't stop it manually.  
-	 obj.engine_start() 
-	 ```  
+     obj.engine_start() 
+     ```  
   **Whats now?**  
   
   It will start your AI, it will ask you to give input and accordingly it will produce output.  
       You can configure `input_mechanism` and `output_mechanism` parameter for voice input/output or text input/output.  
   
      ### Parameters-  
+- 
   ![enter image description here](https://i.imgur.com/rliCjBE.png)  
     
     
@@ -90,8 +92,11 @@ This project is crated only for those who is having interest in building Virtual
   
   
  ### 4.1. Supported Commands-  
- ![enter image description here](https://i.ibb.co/b3dJfz7/raycast-untitled-8.png)    ### 4.1. Supported Input/Output Methods (Which option do I need to choose?)-  
-    ![enter image description here](https://i.ibb.co/sCDWW7K/raycast-untitled-5.png)  
+ ![enter image description here](https://i.ibb.co/b3dJfz7/raycast-untitled-8.png)   
+
+ ### 4.3. Supported Input/Output Methods (Which option do I need to choose?)-  
+   
+ ![enter image description here](https://i.ibb.co/sCDWW7K/raycast-untitled-5.png)  
   
 # 5. Future/Request Features-  
   
@@ -111,18 +116,23 @@ This project is crated only for those who is having interest in building Virtual
   
 5. AdonisAI==1.4: Added new feature (AI Based Chatbot Added, from now you need Secret key for AdonisAI, it's used for security purpose. Get your free key from https://adonis-ai.herokuapp.com).  
   
+6. AdonisAI==1.5: Major Bug Fix from version 1.4. *[DO NOT USE AdonisAI==1.4]*  
+  
+
 # 7. Contribute-  
   
 Instructions Coming Soon  
   
 # 8. Contact me-  
   
-[![Instagram](https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Instagram_logo_2016.svg/800px-Instagram_logo_2016.svg.png =100x100)](https://www.instagram.com/dipesh_pal17)   [![Instagram](https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/YouTube_social_red_circle_%282017%29.svg/2048px-YouTube_social_red_circle_%282017%29.svg.png =100x100)](https://www.youtube.com/dipeshpal17)
+- [Instagram](https://www.instagram.com/dipesh_pal17)
+
+- [YouTube](https://www.youtube.com/dipeshpal17)
   
   
 # 9. Donate-  
   
-[![Donate](https://cdn-icons-png.flaticon.com/512/178/178952.png =250x250)](https://www.buymeacoffee.com/dipeshpal)
+[Donate and Contribute to run me this project, and buy a domain](https://www.buymeacoffee.com/dipeshpal)
   
 **_Feel free to use my code, don't forget to mention credit. All the contributors will get credits in this repo._**  
   
