@@ -86,13 +86,13 @@ This project is crated only for those who is having interest in building Virtual
     
 # 4.  What it can do (Features it supports)-  
   
-1. Currently it support only english language  
+1. Currently, it supports only english language  
 2. Supports voice and text input/output.  
 3. Supports AI based voice input and by using google api voice input.  
   
   
  ### 4.1. Supported Commands-  
- ![enter image description here](https://i.ibb.co/b3dJfz7/raycast-untitled-8.png)   
+ ![enter image description here](https://i.postimg.cc/9M66tfwP/raycast-untitled-9.png)   
 
  ### 4.3. Supported Input/Output Methods (Which option do I need to choose?)-  
    
@@ -118,7 +118,8 @@ This project is crated only for those who is having interest in building Virtual
   
 6. AdonisAI==1.5: Major Bug Fix from version 1.4. *[DO NOT USE AdonisAI==1.4]*  
   
-
+7. AdonisAI==1.6: New features added (screenshot, photo click, youtube video download, play games, covid updates, internet speed check)
+  
 # 7. Contribute-  
   
 Instructions Coming Soon  

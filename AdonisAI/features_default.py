@@ -1,7 +1,6 @@
 try:
     from features.date_time import date_time
     from features.joke import joke
-    from features.launch_app import launch_app
     from features.news import news
     from features.tell_me_about import tell_me_about
     from features.weather import weather
@@ -10,11 +9,16 @@ try:
     from features.whatsapp_message import whatsapp_message
     from features.send_email import send_email
     from features.chatbot import chatbot
+    from features.screenshot import screenshot
+    from features.click_photo import click_photo
+    from features.internet_speed_test import internet_speed_test
+    from features.youtube_video_downloader import youtube_video_downloader
+    from features.covid_cases import covid_cases
+    from features.games import games
 except ImportError as e:
     # print("ImportError: {}".format(e))
     from AdonisAI.features.date_time import date_time
     from AdonisAI.features.joke import joke
-    from AdonisAI.features.launch_app import launch_app
     from AdonisAI.features.news import news
     from AdonisAI.features.tell_me_about import tell_me_about
     from AdonisAI.features.weather import weather
@@ -23,6 +27,12 @@ except ImportError as e:
     from AdonisAI.features.whatsapp_message import whatsapp_message
     from AdonisAI.features.send_email import send_email
     from AdonisAI.features.chatbot import chatbot
+    from AdonisAI.features.screenshot import screenshot
+    from AdonisAI.features.click_photo import click_photo
+    from AdonisAI.features.internet_speed_test import internet_speed_test
+    from AdonisAI.features.youtube_video_downloader import youtube_video_downloader
+    from AdonisAI.features.covid_cases import covid_cases
+    from AdonisAI.features.games import games
 
 dict_of_features = {
     'asking date': date_time.date,
@@ -35,7 +45,13 @@ dict_of_features = {
     'play on youtube': youtube_play.yt_play,
     'send whatsapp message': whatsapp_message.send_whatsapp_message,
     'send email': send_email.send_email,
-    'conversation or greetings': chatbot.chatbot
+    'conversation or greetings': chatbot.chatbot,
+    'take take screenshot': screenshot.take_screenshot,
+    'click photo': click_photo.click_pic,
+    'check internet speed': internet_speed_test.speed_test,
+    'download youtube video': youtube_video_downloader.download_yt_video,
+    'covid cases': covid_cases.check_command_is_for_covid_cases,
+    'play games': games.play_games
 }
 
 what_can_i_do = {
@@ -51,6 +67,12 @@ what_can_i_do = {
     'you can play on youtube ': 'Say- "play on youtube <video name>", "play <video name> on youtube"',
     'you can send whatsapp message ': 'Say- "send whatsapp message',
     'you can send email ': 'Say- "send email',
+    'you can take a screenshot of current screen': 'Say- "take screenshot"',
+    'you can click a photo': 'Say- "click photo"',
+    'you can check internet speed': 'Say- "check internet speed"',
+    'you can download youtube video': 'Say- "download youtube video"',
+    'you can check covid cases': 'Say- "covid cases in <country>", "covid cases <country>"',
+    'you can ask to play games': 'Say- "play games"'
 }
 
 if __name__ == '__main__':
