@@ -3,7 +3,7 @@ import cv2
 import os
 
 
-def click_pic():
+def click_pic(inp_command):
     try:
         t = datetime.datetime.now()
         #     Taking a video from the webcam

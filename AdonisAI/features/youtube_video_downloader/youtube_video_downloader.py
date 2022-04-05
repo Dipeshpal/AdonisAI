@@ -2,7 +2,7 @@ from pytube import YouTube
 import os
 
 
-def download_yt_video():
+def download_yt_video(inp_command):
     ytURL = input("Enter the URL of the YouTube video: ")
     yt = YouTube(ytURL)
     try:

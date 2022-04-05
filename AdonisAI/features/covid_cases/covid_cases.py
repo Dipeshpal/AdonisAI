@@ -4,10 +4,12 @@ import pycountry
 
 def check_command_is_for_covid_cases(command):
     try:
-        country = get_country(command).capitalize()
+        command = command.title()
+        country = get_country(command)
         cases = get_covid_cases(country)
         return f"The current active cases in {country} are {cases}"
-    except:
+    except Exception as e:
+        print("Error: ", e)
         return "Sorry, I couldn't find the country you are looking for. Or server is down."
 
 

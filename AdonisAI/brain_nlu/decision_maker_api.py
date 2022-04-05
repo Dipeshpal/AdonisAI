@@ -1,3 +1,4 @@
+import sys
 from pprint import pprint
 
 import requests
@@ -68,7 +69,15 @@ def make_decision_adonis_sentance_similarity(string, classes):
 
     response = requests.request("POST", url, headers=headers, data=payload)
 
-    return response.json()
+    status = response.json().get("status")
+    if status is False:
+        print(
+            "Wrong secret key. Please check your secret key. \nGet your key from https://adonis-ai.herokuapp.com \nExiting...")
+        sys.exit()
+    else:
+        # print("Secret key is correct.")
+        # print(response.json())
+        return response.json()
 
 
 if __name__ == "__main__":

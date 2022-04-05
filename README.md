@@ -119,6 +119,8 @@ This project is crated only for those who is having interest in building Virtual
 6. AdonisAI==1.5: Major Bug Fix from version 1.4. *[DO NOT USE AdonisAI==1.4]*  
   
 7. AdonisAI==1.6: New features added (screenshot, photo click, youtube video download, play games, covid updates, internet speed check)
+
+8. AdonisAI==1.7: Bug Fixes from version 1.6. *[DO NOT USE AdonisAI==1.6]*
   
 # 7. Contribute-  
   

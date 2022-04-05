@@ -20,7 +20,7 @@ def ping():
     return results
 
 
-def speed_test():
+def speed_test(inp_command):
     try:
         print("Checking internet speed. Please wait...")
         # print('Download Speed: ' + str(download_speed()) + 'MB/s')

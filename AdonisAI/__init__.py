@@ -151,6 +151,12 @@ class AdonisEngine(InputOutput, SpeechRecognition):
         if not os.path.exists("secret_key.txt"):
             with open("secret_key.txt", "w") as f:
                 f.write(secret_key)
+        else:
+            with open("secret_key.txt", "w+") as f:
+                self.old_secret_key = f.read()
+                if self.old_secret_key != secret_key:
+                    f.write(secret_key)
+
 
     def validate_combination(self):
         """

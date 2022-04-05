@@ -46,7 +46,7 @@ dict_of_features = {
     'send whatsapp message': whatsapp_message.send_whatsapp_message,
     'send email': send_email.send_email,
     'conversation or greetings': chatbot.chatbot,
-    'take take screenshot': screenshot.take_screenshot,
+    'take screenshot': screenshot.take_screenshot,
     'click photo': click_photo.click_pic,
     'check internet speed': internet_speed_test.speed_test,
     'download youtube video': youtube_video_downloader.download_yt_video,

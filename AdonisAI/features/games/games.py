@@ -1,7 +1,7 @@
 import webbrowser
 
 
-def play_games():
+def play_games(inp_command):
     url = 'https://poki.com/'
     try:
         webbrowser.open(url)

@@ -3,7 +3,7 @@ import os
 import datetime
 
 
-def take_screenshot():
+def take_screenshot(inp_command):
     try:
         image = pyscreenshot.grab()
         image.show()
